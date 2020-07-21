@@ -89,3 +89,20 @@ max(nchar(twitter))
 * As anticipated Twitter is a large file wil less words per line (140) and more lines
 * CharaThe longest line among the blogs is 40,833 characters.
 * News have longer paragraphs compared to Blogs and Tweets
+
+### ok to here
+
+## Subset The Data
+
+These are pretty large datasets. Hence it is essential to take a small sample from the data and use the subset to going forward. Taking subsets of all three types of datasets
+
+```{r Subset the Data, eval=FALSE}
+set.seed(1234)
+subTwitter <- sample(twitter, size = 5000, replace = TRUE)
+subBlogs <- sample(blogs, size = 5000, replace = TRUE)
+subNews <- sample(news, size = 5000, replace = TRUE)
+sample <- c(subTwitter, subBlogs, subNews)
+fileconn<-file("Sample.txt")
+writeLines(sample, fileConn)
+close(fileConn)
+```

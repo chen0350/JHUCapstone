@@ -446,12 +446,48 @@ twitter &lt;- readLines(twitter, encoding = &quot;UTF-8&quot;, skipNul=TRUE)</co
 <div id="data-summary" class="section level3">
 <h3>Data Summary</h3>
 <ul>
-<li>All three files are over 200 MB</li>
-<li>There are more than 30 million words in all the files</li>
+<li>File size: All three files are over 200 MB</li>
+<li>Word Count: There are more than 30 million words in all the files</li>
 <li>As anticipated Twitter is a large file wil less words per line (140) and more lines</li>
-<li>The longest line among the blogs is 40,833 characters.</li>
+<li>CharaThe longest line among the blogs is 40,833 characters.</li>
 <li>News have longer paragraphs compared to Blogs and Tweets</li>
 </ul>
+</div>
+<div id="ok-to-here" class="section level3">
+<h3>ok to here</h3>
+</div>
+</div>
+<div id="subset-the-data" class="section level2">
+<h2>Subset The Data</h2>
+<p>These are pretty large datasets. Hence it is essential to take a small sample from the data and use the subset to going forward. Taking subsets of all three types of datasets</p>
+<pre class="r"><code>set.seed(1234)
+subTwitter &lt;- sample(twitter, size = 5000, replace = TRUE)
+subBlogs &lt;- sample(blogs, size = 5000, replace = TRUE)
+subNews &lt;- sample(news, size = 5000, replace = TRUE)
+sample &lt;- c(subTwitter, subBlogs, subNews)
+fileconn&lt;-file(&quot;Sample.txt&quot;)
+writeLines(sample, fileConn)
+close(fileConn)</code></pre>
+<p>There are 15,000 lines in the new inclusive sample with each dataset (news, blogs, tweets) contributing 5000 lines</p>
+</div>
+<div id="cleaning-and-removing-profanity" class="section level2">
+<h2>Cleaning And Removing Profanity</h2>
+<p>One of the requirements of the project submission is to clean the corpus and remove any profanity in it. Several cleaning methods such as removing whitespaces, numbers, UTR and punctuations will be used</p>
+<p>Credit: A profanity check is run using Luis von Ahn’s research group at CMU (<a href="http://www.cs.cmu.edu/~biglou/resources/" class="uri">http://www.cs.cmu.edu/~biglou/resources/</a>).</p>
+<div id="clean-the-data" class="section level3">
+<h3>Clean The Data</h3>
+<p>``{r Cleaning the Data , echo=TRUE} ## The TM package is used to clean the corpus text conn &lt;- file(“./FinalData/sample.txt”) corpus &lt;- readLines(conn) corpus &lt;- Corpus(VectorSource(corpus)) corpus &lt;- tm_map(corpus, content_transformer(function(x) iconv(x, to=“UTF-8”, sub=“byte”))) corpus &lt;- tm_map(corpus, content_transformer(tolower)) corpus &lt;- tm_map(corpus, content_transformer(removePunctuation), preserve_intra_word_dashes=TRUE) ## Removing Profanity profanityWords = readLines(‘bad-words.txt’) corpus &lt;- tm_map(corpus,removeWords, profanityWords) corpus &lt;- tm_map(corpus, content_transformer(removeNumbers)) ## Taking out URLs removeURL &lt;- function(x) gsub(&quot;http[[:alnum:]]*“,”“, x) corpus &lt;- tm_map(corpus, content_transformer(removeURL)) corpus &lt;- tm_map(corpus, removeWords, stopwords(”english“)) corpus &lt;- tm_map(corpus, stripWhitespace) ## Save the corpus saveRDS(corpus, file =”./FinalData/corpus.RData&quot;)</p>
+<pre><code>
+
+### Convert The Corpus To A Data Frame
+
+``{r Converting Corpus to a Data Frame, echo=TRUE}
+corpus &lt;- readRDS(&quot;./FinalData/corpus.RData&quot;)
+## Use the code below to see some lines of the corpus
+##for(i in 1:10){print(finalCorpusMem[[i]]$content)}
+## data framing corpus
+corpus &lt;- data.frame(text = get(&quot;content&quot;, corpus), stringsAsFactors = FALSE)
+head(corpus, 50)</code></pre>
 </div>
 </div>
 
